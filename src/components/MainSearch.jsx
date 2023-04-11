@@ -1,39 +1,36 @@
 import { useState } from 'react'
-import { Container, Row, Col, Form,Button } from 'react-bootstrap'
+import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 import Job from './Job'
 import { Link } from 'react-router-dom'
+import { addJobAnnWithThunk } from '../redux/action'
+import { useDispatch, useSelector } from 'react-redux'
 
 const MainSearch = () => {
   const [query, setQuery] = useState('')
-  const [jobs, setJobs] = useState([])
+  const jobs = useSelector((state) => state.jobAnn.jobAnn.content)
+  const dispatch = useDispatch()
 
-  const baseEndpoint = 'https://strive-benchmark.herokuapp.com/api/jobs?search='
 
   const handleChange = (e) => {
     setQuery(e.target.value)
+
+
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
+    console.log()
+    dispatch(addJobAnnWithThunk(query))
+    //al dispatch passo la query come valore della ricerca nell'inputform
 
-    try {
-      const response = await fetch(baseEndpoint + query + '&limit=20')
-      if (response.ok) {
-        const { data } = await response.json()
-        setJobs(data)
-      } else {
-        alert('Error fetching results')
-      }
-    } catch (error) {
-      console.log(error)
-    }
+
   }
 
   return (
     <Container>
       <Row>
         <Col>
-        <Link to="/preference">Favorite</Link>
+          <Link to="/preference">Favorite</Link>
         </Col>
       </Row>
       <Row>
@@ -51,8 +48,8 @@ const MainSearch = () => {
           </Form>
         </Col>
         <Col xs={10} className="mx-auto mb-5">
-  
-        
+
+
           {jobs.map((jobData) => (
             <Job key={jobData._id} data={jobData} />
           ))}
